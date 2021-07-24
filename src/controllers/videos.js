@@ -2,19 +2,15 @@ const sequelize = require("../infra/database");
 const Video = require("../models/Video");
 
 module.exports = {
-  index: async (ctx) => {
+  index: async (_request, response) => {
     await sequelize.sync();
     const videos = await Video.findAll();
 
-    ctx.response.type = "application/json";
-    ctx.response.status = 200;
-    ctx.body = {
-      videos: videos,
-    };
+    return response.json(videos);
   },
 
-  store: async (ctx) => {
-    const { title, description, url } = ctx.request.body;
+  store: async (request, response) => {
+    const { title, description, url } = request.body;
 
     sequelize.sync();
     const video = await Video.create({
@@ -23,11 +19,35 @@ module.exports = {
       url,
     });
 
-    ctx.response.type = "application/json";
-    ctx.response.status = 201;
-    ctx.body = video;
+    return response.json(video);
   },
-  update: async () => {},
 
-  destroy: async () => {},
+  show: async (request, response) => {
+    const { id } = request.params;
+
+    sequelize.sync();
+    const video = await Video.findOne({ id });
+
+    return response.json(video);
+  },
+
+  update: async (request, response) => {
+    const { id } = request.params;
+    const { title, description, url } = request.body;
+
+    sequelize.sync();
+    const video = await Video.findOne({ id });
+    await video.update({ title, description, url });
+
+    return response.json(video);
+  },
+
+  destroy: async (request, response) => {
+    const { id } = request.params;
+
+    const video = await Video.findOne({ id });
+    await video.destroy();
+
+    return response.json({ success: true });
+  },
 };

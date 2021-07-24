@@ -1,18 +1,16 @@
-const json = require("koa-json");
-const bodyParser = require("koa-bodyparser");
-const Koa = require("koa");
+const express = require("express");
+const cors = require("cors");
+const routes = require("./routes");
+const { errors } = require("celebrate");
+const PORT = 3000;
+const app = express();
 
-const app = new Koa();
-
-// modules app koa
-app.use(json()).use(bodyParser()).use(require("./routes"));
+// config server
+app.use(cors());
+app.use(express.json());
+app.use(routes);
+app.use(errors());
 
 module.exports = async function () {
-  app.use(async (ctx) => {
-    ctx.body = {
-      message: "hello world",
-    };
-  });
-
-  app.listen(3000);
+  app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
 };

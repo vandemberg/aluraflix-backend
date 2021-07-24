@@ -1,9 +1,12 @@
-const Router = require("koa-router");
-const Videos = require("./controllers/videos");
+const express = require("express");
+const videoController = require("./controllers/videos");
+const videoValidator = require("./validator/video");
+const router = express.Router();
 
-const router = new Router();
+router.get("/videos", videoController.index);
+router.get("/videos/:id", videoController.show);
+router.post("/videos", videoValidator.create, videoController.store);
+router.put("/videos/:id", videoValidator.update, videoController.update);
+router.delete("/videos/:id", videoController.destroy);
 
-router.get("/videos", Videos.index);
-router.post("/videos", Videos.store);
-
-module.exports = router.routes();
+module.exports = router;
